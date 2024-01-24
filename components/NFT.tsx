@@ -2,7 +2,7 @@ import { Text, Card } from "@chakra-ui/react";
 import { MediaRenderer, Web3Button, useActiveClaimCondition, useContract } from "@thirdweb-dev/react";
 import { NFT } from "@thirdweb-dev/sdk";
 import { TOOLS_ADDRESS } from "../const/addresses";
-import { ethers } from "ethers";
+import { ethers, BigNumber } from "ethers"; // Import BigNumber from ethers
 
 type Props = {
     nft: NFT;
@@ -16,9 +16,11 @@ export default function NFTComponent({ nft }: Props) {
     );
 
     // Function to convert the price to USDC format
-    const convertToUSDC = (priceInWei) => {
+    const convertToUSDC = (priceInWei: BigNumber) => {
+        // Convert BigNumber to string
+        const priceInWeiString = priceInWei.toString();
         // Assuming the price is in the smallest unit, like Wei. Adjust the division factor if different.
-        return ethers.utils.formatUnits(priceInWei, 6); // 6 decimal places for USDC
+        return ethers.utils.formatUnits(priceInWeiString, 6); // 6 decimal places for USDC
     };
 
     return (
