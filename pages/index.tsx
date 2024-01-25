@@ -7,6 +7,32 @@ import { Equipped } from "../components/Equipped";
 import { BigNumber, ethers } from "ethers";
 import { Text, Box, Card, Container, Flex, Heading, SimpleGrid, Spinner, Skeleton } from "@chakra-ui/react";
 
+// Function to format number with commas and limit decimal places
+const formatNumber = (num) => {
+  return Number(num).toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2, // Adjust the number of decimal places here
+  });
+};
+
+// Function to abbreviate large numbers
+const abbreviateNumber = (value) => {
+  let newValue = value;
+  if (value >= 1000) {
+    const suffixes = ["", "K", "M", "B","T"];
+    const suffixNum = Math.floor(("" + value).length / 3);
+    let shortValue = '';
+    for (let precision = 2; precision >= 1; precision--) {
+      shortValue = parseFloat((suffixNum !== 0 ? (value / Math.pow(1000, suffixNum)) : value).toPrecision(precision));
+      const dotLessShortValue = (shortValue + '').replace(/[^a-zA-Z 0-9]+/g, '');
+      if (dotLessShortValue.length <= 2) { break; }
+    }
+    if (shortValue % 1 !== 0)  shortValue = shortValue.toFixed(1);
+    newValue = shortValue + suffixes[suffixNum];
+  }
+  return newValue;
+};
+
 const Home: NextPage = () => {
   const address = useAddress();
 
@@ -18,14 +44,9 @@ const Home: NextPage = () => {
   const { data: ownedFarmers, isLoading: loadingOwnedFarmers } = useOwnedNFTs(farmercontract, address);
   const { data: ownedTools, isLoading: loadingOwnedTools } = useOwnedNFTs(toolsContract, address);
 
-  const { data: equippedTools } = useContractRead(
-    stakingContract, 
-    "getStakeInfo",
-    [address]
-  );
-
+  const { data: equippedTools } = useContractRead(stakingContract, "getStakeInfo", [address]);
   const { data: rewardBalance } = useContractRead(rewardContract, "balanceOf", [address]);
-  
+
   if (!address) {
     return (
       <Container maxW={"1200px"}>
@@ -38,7 +59,7 @@ const Home: NextPage = () => {
   }
 
   if (loadingOwnedFarmers) {
-    return(
+    return (
       <Container maxW={"1200px"}>
         <Flex h={"100vh"} justifyContent={"center"} alignItems={"center"}>
           <Spinner />
@@ -63,23 +84,24 @@ const Home: NextPage = () => {
           <Text fontSize='15px' as='b' color='#2C5282'>Token Contract #</Text>
           <Text fontSize='10px' as='i' color='#2B6CB0'>0x29aA7463A60137277bBFf61DB425e8833dD09B8d</Text>
           <SimpleGrid columns={2} spacing={10}>
+          <Box>
+              <Text fontSize={"small"} fontWeight={"bold"} >WeDao Token Balance:</Text>
+              {rewardBalance && (
+                <p>WDL {abbreviateNumber(formatNumber(ethers.utils.formatUnits(rewardBalance, 18)))}</p>
+              )}
+            </Box>
             <Box>
               {ownedFarmers?.map((nft) => (
                 <div key={nft.metadata.id}>
                   <MediaRenderer 
                     src={nft.metadata.image} 
-                    height="100%"
-                    width="100%"
+                    height="70%"
+                    width="70%"
                   />
                 </div>
               ))}
             </Box>
-            <Box>
-              <Text fontSize={"small"} fontWeight={"bold"}>WeDao Token Balance:</Text>
-                {rewardBalance && (
-                    <p>{ethers.utils.formatUnits(rewardBalance, 18)}</p>
-                  )}
-              </Box>
+            
           </SimpleGrid>
         </Card>
         <Card p={5}>
