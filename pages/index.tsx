@@ -60,6 +60,8 @@ const Home: NextPage = () => {
       <SimpleGrid columns={2} spacing={10}>
         <Card p={8}>
           <Heading>WeDao Pase</Heading>
+          <Text fontSize='15px' as='b' color='#2C5282'>Token Contract #</Text>
+          <Text fontSize='10px' as='i' color='#2B6CB0'>0x29aA7463A60137277bBFf61DB425e8833dD09B8d</Text>
           <SimpleGrid columns={2} spacing={10}>
             <Box>
               {ownedFarmers?.map((nft) => (
