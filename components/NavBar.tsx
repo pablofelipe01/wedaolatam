@@ -16,7 +16,7 @@ export default function NavBar() {
                 <Flex alignItems={"center"}>
                     <Link href={"/"} mx={2}>Home</Link>
                     <Link href={"/shop"} mx={2}>Ecosistema</Link>
-                    <Link href={"/trade"} mx={2}>Trade</Link>
+                    <Link href={"/trade"} mx={2}>WDL/USD</Link>
                 </Flex>
                 <ConnectWallet />
             </Flex>
