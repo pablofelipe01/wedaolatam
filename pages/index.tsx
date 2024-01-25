@@ -8,7 +8,7 @@ import { BigNumber, ethers } from "ethers";
 import { Text, Box, Card, Container, Flex, Heading, SimpleGrid, Spinner, Skeleton } from "@chakra-ui/react";
 
 // Function to format number with commas and limit decimal places
-const formatNumber = (num) => {
+const formatNumber = (num: number | string) => {
   return Number(num).toLocaleString(undefined, {
     minimumFractionDigits: 0,
     maximumFractionDigits: 2, // Adjust the number of decimal places here
@@ -16,22 +16,17 @@ const formatNumber = (num) => {
 };
 
 // Function to abbreviate large numbers
-const abbreviateNumber = (value) => {
-  let newValue = value;
-  if (value >= 1000) {
-    const suffixes = ["", "K", "M", "B","T"];
-    const suffixNum = Math.floor(("" + value).length / 3);
-    let shortValue = '';
-    for (let precision = 2; precision >= 1; precision--) {
-      shortValue = parseFloat((suffixNum !== 0 ? (value / Math.pow(1000, suffixNum)) : value).toPrecision(precision));
-      const dotLessShortValue = (shortValue + '').replace(/[^a-zA-Z 0-9]+/g, '');
-      if (dotLessShortValue.length <= 2) { break; }
-    }
-    if (shortValue % 1 !== 0)  shortValue = shortValue.toFixed(1);
-    newValue = shortValue + suffixes[suffixNum];
-  }
-  return newValue;
+const abbreviateNumber = (value: number): string => {
+  if (value < 1000) return value.toString(); // Return the number as is if less than 1000
+
+  const suffixes = ["K", "M", "B", "T"];
+  const suffixNum = Math.floor(Math.log10(value) / 3); // Calculate the index for suffixes
+  const shortValue = (value / Math.pow(1000, suffixNum)).toFixed(1); // Calculate the short value
+
+  return shortValue + suffixes[suffixNum - 1]; // Attach the correct suffix
 };
+
+
 
 const Home: NextPage = () => {
   const address = useAddress();
@@ -87,7 +82,13 @@ const Home: NextPage = () => {
           <Box>
               <Text fontSize={"small"} fontWeight={"bold"} >WeDao Token Balance:</Text>
               {rewardBalance && (
-                <p>WDL {abbreviateNumber(formatNumber(ethers.utils.formatUnits(rewardBalance, 18)))}</p>
+                // <p>WDL {abbreviateNumber(formatNumber(ethers.utils.formatUnits(rewardBalance, 18)))}</p>
+                // <p>WDL {abbreviateNumber(formatNumber(ethers.utils.formatUnits(rewardBalance, 18)))}</p>
+                <p>WDL {abbreviateNumber(Number(ethers.utils.formatUnits(rewardBalance, 18)))}</p>
+
+
+
+
               )}
             </Box>
             <Box>
