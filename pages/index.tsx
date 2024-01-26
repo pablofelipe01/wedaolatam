@@ -5,28 +5,24 @@ import { ClaimFarmer } from "../components/ClaimFarmer";
 import { Inventory } from "../components/Inventory";
 import { Equipped } from "../components/Equipped";
 import { BigNumber, ethers } from "ethers";
-import { Text, Box, Card, Container, Flex, Heading, SimpleGrid, Spinner, Skeleton } from "@chakra-ui/react";
+import { Text, Box, Card, Container, Flex, Heading, SimpleGrid, Spinner, Skeleton, useBreakpointValue } from "@chakra-ui/react";
 
 // Function to format number with commas and limit decimal places
 const formatNumber = (num: number | string) => {
   return Number(num).toLocaleString(undefined, {
     minimumFractionDigits: 0,
-    maximumFractionDigits: 2, // Adjust the number of decimal places here
+    maximumFractionDigits: 2,
   });
 };
 
 // Function to abbreviate large numbers
 const abbreviateNumber = (value: number): string => {
-  if (value < 1000) return value.toString(); // Return the number as is if less than 1000
-
+  if (value < 1000) return value.toString();
   const suffixes = ["K", "M", "B", "T"];
-  const suffixNum = Math.floor(Math.log10(value) / 3); // Calculate the index for suffixes
-  const shortValue = (value / Math.pow(1000, suffixNum)).toFixed(1); // Calculate the short value
-
-  return shortValue + suffixes[suffixNum - 1]; // Attach the correct suffix
+  const suffixNum = Math.floor(Math.log10(value) / 3);
+  const shortValue = (value / Math.pow(1000, suffixNum)).toFixed(1);
+  return shortValue + suffixes[suffixNum - 1];
 };
-
-
 
 const Home: NextPage = () => {
   const address = useAddress();
@@ -41,6 +37,13 @@ const Home: NextPage = () => {
 
   const { data: equippedTools } = useContractRead(stakingContract, "getStakeInfo", [address]);
   const { data: rewardBalance } = useContractRead(rewardContract, "balanceOf", [address]);
+
+  // Responsive design adjustments
+  const gridColumns = useBreakpointValue({ base: 1, md: 2 });
+  const contributionsGridColumns = useBreakpointValue({ base: 1, md: 2, lg: 3 });
+  const fontSize = useBreakpointValue({ base: 'sm', md: 'md' });
+  const cardPadding = useBreakpointValue({ base: 4, md: 8 });
+  const headingSize = useBreakpointValue({ base: "md", md: "lg" });
 
   if (!address) {
     return (
@@ -73,22 +76,16 @@ const Home: NextPage = () => {
 
   return (
     <Container maxW={"1200px"}>
-      <SimpleGrid columns={2} spacing={10}>
-        <Card p={8}>
-          <Heading>WeDao Pase</Heading>
-          <Text fontSize='15px' as='b' color='#2C5282'>Token Contract #</Text>
-          <Text fontSize='10px' as='i' color='#2B6CB0'>0x29aA7463A60137277bBFf61DB425e8833dD09B8d</Text>
-          <SimpleGrid columns={2} spacing={10}>
-          <Box>
-              <Text fontSize={"small"} fontWeight={"bold"} >WeDao Token Balance:</Text>
+      <SimpleGrid columns={gridColumns} spacing={10}>
+        <Card p={cardPadding}>
+          <Heading size={headingSize}>WeDao Pase</Heading>
+          <Text fontSize={fontSize} as='b' color='#2C5282'>Token Contract #</Text>
+          <Text fontSize='small' as='i' color='#2B6CB0'>0x29aA7463A60137277bBFf61DB425e8833dD09B8d</Text>
+          <SimpleGrid columns={gridColumns} spacing={10}>
+            <Box>
+              <Text fontSize={"small"} fontWeight={"bold"}>WeDao Token Balance:</Text>
               {rewardBalance && (
-                // <p>WDL {abbreviateNumber(formatNumber(ethers.utils.formatUnits(rewardBalance, 18)))}</p>
-                // <p>WDL {abbreviateNumber(formatNumber(ethers.utils.formatUnits(rewardBalance, 18)))}</p>
                 <p>WDL {abbreviateNumber(Number(ethers.utils.formatUnits(rewardBalance, 18)))}</p>
-
-
-
-
               )}
             </Box>
             <Box>
@@ -102,21 +99,19 @@ const Home: NextPage = () => {
                 </div>
               ))}
             </Box>
-            
           </SimpleGrid>
         </Card>
-        <Card p={5}>
-          <Heading>Mis Aportes</Heading>
+
+        <Card p={cardPadding}>
+          <Heading size={headingSize}>Mis Aportes</Heading>
           <Skeleton isLoaded={!loadingOwnedTools}>
-            <Inventory
-              nft={ownedTools}
-            />     
+            <Inventory nft={ownedTools} />
           </Skeleton>
-        </Card>
-      </SimpleGrid>
-      <Card p={5} my={10}>
-        <Heading mb={"30px"}>Contribuciones En Accion:</Heading>
-        <SimpleGrid columns={3} spacing={10}>
+        </Card> 
+
+        <Card p={cardPadding} my={10}>
+          <Heading mb={"30px"} size={headingSize}>Contribuciones En Accion:</Heading>
+          <SimpleGrid columns={contributionsGridColumns} spacing={10}>
             {equippedTools &&
               equippedTools[0].map((nft: BigNumber) => (
                 <Equipped
@@ -124,8 +119,9 @@ const Home: NextPage = () => {
                   tokenId={nft.toNumber()}
                 />
               ))}
-        </SimpleGrid>
-      </Card>
+          </SimpleGrid>
+        </Card>
+      </SimpleGrid>
     </Container>
   );
 };

@@ -2,7 +2,7 @@ import { MediaRenderer, Web3Button, useAddress, useContract } from '@thirdweb-de
 import { NFT } from '@thirdweb-dev/sdk';
 import { STAKING_ADDRESS, TOOLS_ADDRESS } from '../const/addresses';
 import Link from 'next/link';
-import { Text, Box, Button, Card, SimpleGrid, Stack } from '@chakra-ui/react';
+import { Text, Box, Button, Card, SimpleGrid, Stack, useBreakpointValue } from '@chakra-ui/react';
 
 type Props = {
     nft: NFT[] | undefined;
@@ -32,13 +32,13 @@ export function Inventory({ nft }: Props) {
         await stakingContract?.call("stake", [id, 1]);
     };
 
+    // Responsive grid columns
+    const gridColumns = useBreakpointValue({ base: 1, sm: 2, md: 3 });
+
     if(nft?.length === 0) {
         return (
             <Box>
-                {/* <Text>Nfts</Text> */}
-                <Link
-                    href="/shop"
-                >
+                <Link href="/shop">
                     <Button>Ecosistema</Button>
                 </Link>
             </Box>
@@ -46,20 +46,20 @@ export function Inventory({ nft }: Props) {
     }
 
     return (
-        <SimpleGrid columns={3} spacing={4}>
+        <SimpleGrid columns={gridColumns} spacing={4}>
             {nft?.map((nft) => (
                 <Card key={nft.metadata.id} p={5}>
                     <Stack alignItems={"center"}>
-                    <MediaRenderer 
-                        src={nft.metadata.image} 
-                        height="100px"
-                        width="100px"
-                    />
-                    <Text>{nft.metadata.name}</Text>
-                    <Web3Button
-                        contractAddress={STAKING_ADDRESS}
-                        action={() => stakeNFT(nft.metadata.id)}
-                    >Usar</Web3Button>
+                        <MediaRenderer 
+                            src={nft.metadata.image} 
+                            height="100px"
+                            width="100px"
+                        />
+                        <Text>{nft.metadata.name}</Text>
+                        <Web3Button
+                            contractAddress={STAKING_ADDRESS}
+                            action={() => stakeNFT(nft.metadata.id)}
+                        >Usar</Web3Button>
                     </Stack>
                 </Card>
             ))}
