@@ -31,7 +31,7 @@ const Trade = () => {
       {/* Box component as a wrapper for iframe according to Chakra UI */}
       <Box id="dexscreener-embed">
         <iframe 
-          src="https://dexscreener.com/polygon/0xf1E5912A784D99cDDdcDe3c76B28B05B1bb47a0e?embed=1&theme=dark" 
+          src="https://dexscreener.com/polygon/0x29aA7463A60137277bBFf61DB425e8833dD09B8d?embed=1&theme=dark" 
           title="DexScreener"
         ></iframe>
       </Box>
