@@ -19,6 +19,7 @@ export default function NavBar() {
                     <Link href={"/"} mx={2}>Home</Link>
                     <Link href={"/shop"} mx={2}>Ecosistema</Link>
                     <Link href={"/trade"} mx={2}>WDL/USD</Link>
+                    <Link href={"/price"} mx={2}>Price</Link>
                 </Flex>
 
                 {/* ConnectWallet wrapped in a Box for responsive display */}
